@@ -9,6 +9,7 @@ use Validator;
 use App\Models\User;
 use Illuminate\Support\Str;
 use App\Models\Country;
+use Illuminate\Support\Facades\Hash;
 
 class RegisterController extends Controller
 {
@@ -22,31 +23,36 @@ class RegisterController extends Controller
     {
         $postData = $request->all();
 
-        $rules = array(
-            'first_name' => 'required',
-            'last_name' => 'required',
+        $validator = Validator::make($postData, [
+            'name' => 'required|string|max:255',
             'email' => 'required|email|unique:users,email',
-            'password' => 'required|min:5',
-        );
+            'mobile' => ['required', 'regex:/^[0-9]{10,15}$/'],
+            'country' => 'required|exists:countries,id',
+            'state' => 'required|exists:states,id',
+            'city' => 'required|exists:cities,id',
+            'address' => 'required|string|max:500',
+            'gender' => 'required|in:male,female,other',
+            'password' => 'required|min:8|confirmed',
+            'password_confirmation' => 'required|same:password',
+        ]);
 
-        $messsages = array(
-            'first_name.required' => 'First Name field is required.',
-            'last_name.required' => 'Last Name field is required.',
-            'email.required' => 'Email address field is required.',
-            'password.required' => 'Password Field is required.'
-        );
 
-        $validator = Validator::make($postData, $rules, $messsages);
         if ($validator->fails()) {
-            return Redirect::to(route('register'))
-                ->withErrors($validator);
+            return Redirect::back()
+            ->withErrors($validator)
+            ->withInput();
         } else {
-            $user = User::create([
+            User::create([
                 'id' => Str::uuid(),
-                'first_name' => $postData['first_name'],
-                'last_name' => $postData['last_name'],
+                'name' => $postData['name'],
                 'email' => $postData['email'],
-                'password' => $postData['password']
+                'mobile' => $postData['mobile'],
+                'country_id' => $postData['country'],
+                'state_id' => $postData['state'],
+                'city_id' => $postData['city'],
+                'address' => $postData['address'],
+                'gender' => $postData['gender'],
+                'password' => Hash::make($postData['password']),
             ]);
             return redirect()->route('login')->with('success', 'Registration successful!');
         }
