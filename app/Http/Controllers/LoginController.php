@@ -11,11 +11,11 @@ class LoginController extends Controller
 {
     public function showLoginForm()
     {
-        // if (Auth::guard('admin')->check()) {
-        //     // return redirect()->intended(route('admin.dashboard'));
-        // } else {
-        // }
-        return \View::make('auth.login');
+        if (Auth::check()) {
+            return redirect()->intended(route('dashboard'));
+        } else {
+            return \View::make('auth.login');
+        }
     }
 
     public function postLogin(Request $request)

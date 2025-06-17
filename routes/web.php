@@ -3,7 +3,7 @@
 use App\Http\Controllers\LoginController;
 use App\Http\Controllers\RegisterController;
 use App\Http\Controllers\DashBoardController;
-use App\Http\Controllers\BookingController;
+use App\Http\Controllers\LocationController;
 use Illuminate\Support\Facades\Route;
 
 
@@ -17,10 +17,11 @@ Route::get('/login', [LoginController::class, 'showLoginForm'])->name('login');
 Route::get('/register', [RegisterController::class, 'showRegisterForm'])->name('register');
 Route::post('submit/register', [RegisterController::class, 'postRegisterForm'])->name('submit.register');
 Route::post('submit/login', [LoginController::class, 'postLogin'])->name('submit.login');
+Route::get('get-states-by-country/{id}', [LocationController::class, 'getStates']);
+Route::get('get-cities-by-state/{id}', [LocationController::class, 'getCities']);
 
 Route::middleware(['auth.check'])->group(function () {
     Route::get('/dashboard', [DashBoardController::class, 'index'])->name('dashboard');
-    Route::resource('booking', BookingController::class);
 });
 
 Route::get('logout', [LoginController::class, 'adminPostLogout']);

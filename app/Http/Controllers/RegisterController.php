@@ -8,12 +8,14 @@ use Redirect;
 use Validator;
 use App\Models\User;
 use Illuminate\Support\Str;
+use App\Models\Country;
 
 class RegisterController extends Controller
 {
     public function showRegisterForm()
     {
-        return \View::make('auth.register');
+        $countries = Country::all(); 
+        return \View::make('auth.register', compact('countries'));
     }
 
     public function postRegisterForm(request $request)
